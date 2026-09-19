@@ -1,0 +1,112 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: shopkeeper-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shopkeeper_dw
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/dw.sql:/docker-entrypoint-initdb.d/01-dw.sql:ro
+      - ./docker/mysql/meta.sql:/docker-entrypoint-initdb.d/02-meta.sql:ro
+      - ./docker/mysql/users.sql:/docker-entrypoint-initdb.d/03-users.sql:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  qdrant:
+    image: qdrant/qdrant:v1.16
+    container_name: shopkeeper-qdrant
+    restart: unless-stopped
+    ports:
+      - "6335:6333"
+      - "6336:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.10
+    container_name: shopkeeper-elasticsearch
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shopkeeper-backend:local
+    container_name: shopkeeper-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      QDRANT_URL: http://qdrant:6333
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      FRONTEND_ORIGIN: http://localhost:8080
+    ports:
+      - "8000:8000"
+    volumes:
+      - type: bind
+        source: ${HF_CACHE_PATH}
+        target: /home/appuser/.cache/huggingface
+    depends_on:
+      mysql:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://127.0.0.1:8000/health"
+        ]
+      interval: 10s
+      timeout: 5s
+      start_period: 120s
+      retries: 12
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+    image: shopkeeper-frontend:local
+    container_name: shopkeeper-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  qdrant_data:
+  es_data:

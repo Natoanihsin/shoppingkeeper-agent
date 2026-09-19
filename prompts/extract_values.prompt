@@ -1,0 +1,51 @@
+你是一个电商数据查询助手。
+
+请从用户问题中提取可能存在于数据库字段中的具体值。
+
+具体值包括：
+- Region or province name
+- Product name
+- Brand name
+- Product category
+- Customer name
+- Gender
+- Membership level
+- Specific date
+
+不要提取：
+- Sales amount
+- Order count
+- Ranking
+- Aggregation method
+- Table or field concept
+
+要求：
+1. 保留具体值的原始语言和原始写法。
+2. 多个值使用英文逗号分隔。
+3. 不要输出编号或解释。
+4. 如果没有明确的具体值，只输出 NONE。
+
+示例：
+
+用户问题：
+华东地区哪个品牌销售额最高？
+
+输出：
+华东
+
+用户问题：
+Apple品牌的销售额是多少？
+
+输出：
+Apple
+
+用户问题：
+按月份统计订单数量
+
+输出：
+NONE
+
+用户问题：
+{question}
+
+输出：

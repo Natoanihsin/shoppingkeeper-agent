@@ -1,0 +1,17 @@
+# Environment variables
+.env
+
+# Python virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test and lint cache
+.pytest_cache/
+.ruff_cache/
+
+# PyCharm
+.idea/

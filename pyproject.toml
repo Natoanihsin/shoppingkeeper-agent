@@ -1,0 +1,53 @@
+[project]
+name = "shopkeeper"
+version = "0.1.0"
+description="A learning version of an e-commerce NL2SQL agent."
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "sqlalchemy>=2.0.0",
+    "pymysql>=1.1.0",
+    "python-dotenv>=1.0.0",
+    "sqlglot>=30.18.0",
+    "langgraph>=1.1.6",
+    "langchain>=1.2.15",
+    "langchain-openai>=1.1.12",
+    "qdrant-client>=1.17.1,<1.18",
+    "sentence-transformers>=6.1.0",
+    "elasticsearch>=8,<9",
+
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "ruff>=0.9.0",
+]
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E","F","I","UP"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = [
+    "integration: requires local Docker infrastructure",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = [
+    "tests*",
+    "prompts*",
+    "frontend*",
+    "docker*",
+]
