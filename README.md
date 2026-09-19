@@ -220,3 +220,10 @@ docker compose down
 ```
 
 To stop services without deleting persistent volumes, do not add the `-v` option.
+
+## Acknowledgements
+
+This learning project was developed with reference to
+[didilili/shopkeeper-agent](https://github.com/didilili/shopkeeper-agent).
+
+The upstream project is licensed under the MIT License.
