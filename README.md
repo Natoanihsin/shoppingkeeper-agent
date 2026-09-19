@@ -1,5 +1,7 @@
 # Shopkeeper Agent Learning
 
+[![CI](https://github.com/Natoanihsin/shoppingkeeper-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/Natoanihsin/shoppingkeeper-agent/actions/workflows/ci.yml)
+
 一个用于学习企业级 AI Agent 开发的电商智能问数项目。
 
 用户可以使用自然语言提出业务问题。系统会检索字段、指标和字段值，生成并校验只读 SQL，查询电商数仓，并通过 SSE 实时返回执行进度和最终结果。
